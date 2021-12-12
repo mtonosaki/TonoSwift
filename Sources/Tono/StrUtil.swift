@@ -8,6 +8,23 @@ import Foundation
 
 open class StrUtil {
     
+    public static func isIntegerString(_ str: String ) -> Bool {
+        var index = str.startIndex
+        for i in 0..<str.count {
+            let c = str[index]
+            index = str.index(after: index)
+            if i == 0 {
+                if c == "-" {
+                    continue
+                }
+            }
+            if c < "0" || c > "9" {
+                return false
+            }
+        }
+        return true
+    }
+    
     public static func toHms(hour: Double) -> String {
         let h = floor(hour)
         let m = Int(floor((hour - h) * 60))
@@ -30,12 +47,12 @@ open class StrUtil {
         return ret
     }
     
-    public static func mid(_ str: String, start: Int, len: Int = 999999999) -> String.SubSequence {
+    public static func mid(_ str: String, start: Int, length: Int = 999999999) -> String.SubSequence {
         if start >= str.count {
             return str[str.endIndex..<str.endIndex]
         }
         var safeStart: Int = start
-        var safeLen: Int = len
+        var safeLen: Int = length
         if start < 0 {
             safeLen = safeLen + start
             safeStart = 0
@@ -50,6 +67,14 @@ open class StrUtil {
         }
         let i2 = str.index(i1, offsetBy: safeLen)
         return str[i1..<i2]
+    }
+    
+    public static func left(_ str: String, length: Int) -> String.SubSequence {
+        return mid(str, start: 0, length: length)
+    }
+    
+    public static func right(_ str: String, length: Int) -> String.SubSequence {
+        return mid(str, start: str.count - length)
     }
     
     static func parseBoolFuzzy(_ str: String) -> Bool? {

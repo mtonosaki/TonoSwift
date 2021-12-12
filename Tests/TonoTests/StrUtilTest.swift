@@ -8,6 +8,14 @@ import XCTest
 
 class StrUtilsTest: XCTestCase {
 
+    func isIntegerString() {
+        XCTAssertTrue(StrUtil.isIntegerString("0123456789"))
+        XCTAssertTrue(StrUtil.isIntegerString("-1234567890"))
+
+        XCTAssertFalse(StrUtil.isIntegerString("1-234567890"))
+        XCTAssertFalse(StrUtil.isIntegerString("123a456"))
+    }
+    
     func test_toHms() {
         XCTAssertEqual(StrUtil.toHms(hour: 1.0), "1:00:00")
         XCTAssertEqual(StrUtil.toHms(hour: 2.0), "2:00:00")
@@ -30,22 +38,36 @@ class StrUtilsTest: XCTestCase {
         XCTAssertEqual(StrUtil.rep("あ", n: 3), "あああ")
     }
     
+    func test_left() {
+        XCTAssertEqual(StrUtil.left("abcdefghijklmn", length:3), "abc")
+        XCTAssertEqual(StrUtil.left("abcdefghijklmn", length:2), "ab")
+        XCTAssertEqual(StrUtil.left("abcdefghijklmn", length:1), "a")
+        XCTAssertEqual(StrUtil.left("abcdefghijklmn", length:0), "")
+    }
+
+    func test_right() {
+        XCTAssertEqual(StrUtil.right("abcdefghijklmn", length:3), "lmn")
+        XCTAssertEqual(StrUtil.right("abcdefghijklmn", length:2), "mn")
+        XCTAssertEqual(StrUtil.right("abcdefghijklmn", length:1), "n")
+        XCTAssertEqual(StrUtil.right("abcdefghijklmn", length:0), "")
+    }
+
     func test_mid() throws {
         let str = "ABCDEFGHIJKLMN"
-        XCTAssertEqual(StrUtil.mid(str, start:0, len:3), "ABC")
-        XCTAssertEqual(StrUtil.mid(str, start:1, len:3), "BCD")
-        XCTAssertEqual(StrUtil.mid(str, start:1, len:2), "BC")
-        XCTAssertEqual(StrUtil.mid(str, start:1, len:1), "B")
-        XCTAssertEqual(StrUtil.mid(str, start:1, len:0), "")
-        XCTAssertEqual(StrUtil.mid(str, start:11, len:3), "LMN")
-        XCTAssertEqual(StrUtil.mid(str, start:12, len:3), "MN")
-        XCTAssertEqual(StrUtil.mid(str, start:13, len:3), "N")
-        XCTAssertEqual(StrUtil.mid(str, start:14, len:3), "")
-        XCTAssertEqual(StrUtil.mid(str, start:15, len:3), "")
-        XCTAssertEqual(StrUtil.mid(str, start:-1, len:3), "AB")
-        XCTAssertEqual(StrUtil.mid(str, start:-2, len:3), "A")
-        XCTAssertEqual(StrUtil.mid(str, start:-3, len:3), "")
-        XCTAssertEqual(StrUtil.mid(str, start:-4, len:3), "")
+        XCTAssertEqual(StrUtil.mid(str, start:0, length:3), "ABC")
+        XCTAssertEqual(StrUtil.mid(str, start:1, length:3), "BCD")
+        XCTAssertEqual(StrUtil.mid(str, start:1, length:2), "BC")
+        XCTAssertEqual(StrUtil.mid(str, start:1, length:1), "B")
+        XCTAssertEqual(StrUtil.mid(str, start:1, length:0), "")
+        XCTAssertEqual(StrUtil.mid(str, start:11, length:3), "LMN")
+        XCTAssertEqual(StrUtil.mid(str, start:12, length:3), "MN")
+        XCTAssertEqual(StrUtil.mid(str, start:13, length:3), "N")
+        XCTAssertEqual(StrUtil.mid(str, start:14, length:3), "")
+        XCTAssertEqual(StrUtil.mid(str, start:15, length:3), "")
+        XCTAssertEqual(StrUtil.mid(str, start:-1, length:3), "AB")
+        XCTAssertEqual(StrUtil.mid(str, start:-2, length:3), "A")
+        XCTAssertEqual(StrUtil.mid(str, start:-3, length:3), "")
+        XCTAssertEqual(StrUtil.mid(str, start:-4, length:3), "")
         XCTAssertEqual(StrUtil.mid(str, start:5), "FGHIJKLMN")
     }
     
