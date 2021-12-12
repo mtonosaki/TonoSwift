@@ -8,6 +8,23 @@ import Foundation
 
 open class StrUtil {
     
+    public static func isIntegerString(_ str: String ) -> Bool {
+        var index = str.startIndex
+        for i in 0..<str.count {
+            let c = str[index]
+            index = str.index(after: index)
+            if i == 0 {
+                if c == "-" {
+                    continue
+                }
+            }
+            if c < "0" || c > "9" {
+                return false
+            }
+        }
+        return true
+    }
+    
     public static func toHms(hour: Double) -> String {
         let h = floor(hour)
         let m = Int(floor((hour - h) * 60))

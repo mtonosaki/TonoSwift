@@ -8,6 +8,14 @@ import XCTest
 
 class StrUtilsTest: XCTestCase {
 
+    func isIntegerString() {
+        XCTAssertTrue(StrUtil.isIntegerString("0123456789"))
+        XCTAssertTrue(StrUtil.isIntegerString("-1234567890"))
+
+        XCTAssertFalse(StrUtil.isIntegerString("1-234567890"))
+        XCTAssertFalse(StrUtil.isIntegerString("123a456"))
+    }
+    
     func test_toHms() {
         XCTAssertEqual(StrUtil.toHms(hour: 1.0), "1:00:00")
         XCTAssertEqual(StrUtil.toHms(hour: 2.0), "2:00:00")
