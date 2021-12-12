@@ -11,7 +11,7 @@ public struct StrUtil {
         
     }
     
-    static func Mid(_ str: String, start: Int, len: Int = 999999999) -> String.SubSequence {
+    public static func Mid(_ str: String, start: Int, len: Int = 999999999) -> String.SubSequence {
         if start >= str.count {
             return str[str.endIndex..<str.endIndex]
         }
