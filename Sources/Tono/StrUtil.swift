@@ -7,7 +7,30 @@
 import Foundation
 
 open class StrUtil {
-    public static func Mid(_ str: String, start: Int, len: Int = 999999999) -> String.SubSequence {
+    
+    public static func toHms(hour: Double) -> String {
+        let h = floor(hour)
+        let m = Int(floor((hour - h) * 60))
+        let s = Int(floor(hour * 3600)) % 60
+        let ret = String(format:"%d:%02d:%02d", Int(h), m, s)
+        return ret
+    }
+    
+    public static func rep(_ character: String, n: Int) -> String {
+        if n < 1 {
+            return ""
+        }
+        if character.count * n > 4096 {
+            return "Error: rep(\(character) x \(n) ... too long result"
+        }
+        var ret = ""
+        for _ in 1...n {
+            ret.append(character)
+        }
+        return ret
+    }
+    
+    public static func mid(_ str: String, start: Int, len: Int = 999999999) -> String.SubSequence {
         if start >= str.count {
             return str[str.endIndex..<str.endIndex]
         }
