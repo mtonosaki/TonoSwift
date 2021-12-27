@@ -55,5 +55,15 @@ class TspResolverLoopTest: XCTestCase, TspResolverDelegate {
         let retjoin = retstr.joined(separator: "")
         XCTAssertEqual(retjoin, "BDCA")
     }
+    
+    func test_TspResolverStartEndFix() {
+        let tsp = TspResolverStartEndFix()
+        tsp.delegate = self
+        let nodes = [Node(name: "A"), Node(name: "B"), Node(name: "C"), Node(name: "D")]
+        let ret = tsp.solve(data: nodes)
+        let retstr = ret.compactMap { $0 as? Node }.map{ $0.name }
+        let retjoin = retstr.joined(separator: "")
+        XCTAssertEqual(retjoin, "ABCD")
+    }
 }
 

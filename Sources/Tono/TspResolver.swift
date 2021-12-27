@@ -4,8 +4,9 @@
 
 import Foundation
 
+
 // usage of this class, see also TspResolverLoopTest.swift
-// Keep Start node version TSP resolver.
+// try to find loop distance version TSP resolver.
 open class TspResolverLoop: TspResolver {
 
     func solve(data: [TspNode]) -> [TspNode] {
@@ -37,6 +38,42 @@ open class TspResolverLoop: TspResolver {
         return ret
     }
 }
+
+
+// Try to find optimized start to end sequence version TSP resolver
+open class TspResolverStartEndFix : TspResolver {
+
+    func solve(data: [TspNode]) -> [TspNode] {
+        nodes = Array(data)
+        guard var nodes = nodes else { fatalError()}
+        var indexes = (0..<nodes.count).map{ $0 }
+        let tarIndexes = (0..<(indexes.count - 2)).map{ indexes[$0 + 1] }
+        let res = optimize(indexArray: tarIndexes)
+        for i in 0..<res.count {
+            indexes[i + 1] = res[i]
+        }
+        let tmpNodes = Array(nodes)
+        nodes.removeAll()
+        for i in 0..<indexes.count {
+            nodes.append(tmpNodes[indexes[i]])
+        }
+        return nodes
+    }
+
+    override func calcCost(indexArray: [Int]) -> Double {
+        guard let delegate = delegate else { fatalError("Set delegte first before solve") }
+        guard let nodes = nodes else {fatalError() }
+        
+        var ret = delegate.getTspCost(from: nodes[0], to: nodes[indexArray[0]], stage: .initialCost)
+        for i in 1..<indexArray.count {
+            ret += delegate.getTspCost(from: nodes[indexArray[i - 1]], to: nodes[indexArray[i]], stage: .normal)
+        }
+        ret += delegate.getTspCost(from: nodes[indexArray[indexArray.count - 1]], to: nodes[nodes.count - 1], stage: .finalCostFix)
+        return ret
+    }
+}
+
+
 
 // Try to find the total optimized sequence version TSP resolver
 open class TspResolverShuffle : TspResolver {
