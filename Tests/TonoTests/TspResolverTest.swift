@@ -36,7 +36,7 @@ class TspResolverLoopTest: XCTestCase, TspResolverDelegate {
         var name: String
     }
     
-    func testLoop1() {
+    func test_Loop() {
         let tsp = TspResolverLoop()
         tsp.delegate = self
         let nodes = [Node(name: "A"), Node(name: "B"), Node(name: "C"), Node(name: "D")]
@@ -44,6 +44,16 @@ class TspResolverLoopTest: XCTestCase, TspResolverDelegate {
         let retstr = ret.compactMap { $0 as? Node }.map{ $0.name }
         let retjoin = retstr.joined(separator: "")
         XCTAssertEqual(retjoin, "ABDC")
+    }
+
+    func test_Shuffle() {
+        let tsp = TspResolverShuffle()
+        tsp.delegate = self
+        let nodes = [Node(name: "A"), Node(name: "B"), Node(name: "C"), Node(name: "D")]
+        let ret = tsp.solve(data: nodes)
+        let retstr = ret.compactMap { $0 as? Node }.map{ $0.name }
+        let retjoin = retstr.joined(separator: "")
+        XCTAssertEqual(retjoin, "BDCA")
     }
 }
 
