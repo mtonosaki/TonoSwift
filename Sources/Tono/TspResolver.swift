@@ -4,6 +4,8 @@
 
 import Foundation
 
+// usage of this class, see also TspResolverLoopTest.swift
+
 open class TspResolverLoop: TspResolver {
 
     func solve(data: [TspNode]) -> [TspNode] {
