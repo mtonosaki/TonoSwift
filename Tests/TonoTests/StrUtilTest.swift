@@ -8,7 +8,7 @@ import XCTest
 
 class StrUtilsTest: XCTestCase {
 
-    func isIntegerString() {
+    func test_isIntegerString() {
         XCTAssertTrue(StrUtil.isIntegerString("0123456789"))
         XCTAssertTrue(StrUtil.isIntegerString("-1234567890"))
 
