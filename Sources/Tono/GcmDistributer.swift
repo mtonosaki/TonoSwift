@@ -11,13 +11,20 @@ import Foundation
 // gcm.append(MyNodeType(...), frequency: 6)
 public struct GcmDistributer : IteratorProtocol, Sequence {
 
-    var totalFrequency = 0.0
-    var inputValues = Dictionary<AnyHashable, Double>()
-    var workValues = Dictionary<AnyHashable, Double>()
+    var totalFrequency: Int = 0
+    var inputValues = Dictionary<AnyHashable, Int>()
+    var workValues = Dictionary<AnyHashable, Int>()
     var currentValue: AnyHashable? = nil
-    var loop = 0.0
+    var loop: Int = 0
+    var isInitialNext = true
+
+    var count: Int {
+        get {
+            return totalFrequency
+        }
+    }
     
-    mutating func append(_ newElement: AnyHashable, frequency: Double) {
+    mutating func append(_ newElement: AnyHashable, frequency: Int) {
         
         let maybeval = inputValues[newElement]
         if maybeval == nil {
@@ -30,32 +37,41 @@ public struct GcmDistributer : IteratorProtocol, Sequence {
     
     public mutating func next() -> AnyHashable? {
 
-        if inputValues.count == 0 {
-            return nil
+        if isInitialNext {
+            if inputValues.count == 0 {
+                return nil
+            }
+            for key in inputValues.keys {
+                workValues[key] = 0
+            }
+            isInitialNext = false
+            loop = 0
+            doNext()    // make initial currentValue
         }
         defer {
-            if workValues.count == 0 {
-                for key in inputValues.keys {
-                    workValues[key] = 0
-                }
-                loop = 0
-            }
-            
-            // find max value
-            var maxVal = -1.0
-            currentValue = nil
-            for kv in inputValues {
-                if let val = workValues[kv.key] {
-                    workValues[kv.key] = val + kv.value
-                    if val > maxVal {
-                        maxVal = val
-                        currentValue = kv.key
-                    }
-                }
-            }
-            workValues[currentValue!] = (workValues[currentValue!] ?? 0) + totalFrequency
-            loop += 1
+            doNext()
         }
-        return loop <= totalFrequency ? currentValue : nil
+        return currentValue
+    }
+    
+    private mutating func doNext() {
+        
+        if loop >= totalFrequency {
+            currentValue = nil
+            return
+        }
+        // find max value
+        var maxVal = -1
+        currentValue = nil
+        for inputKeyValue in inputValues {
+            let workValue = workValues[inputKeyValue.key]! + inputKeyValue.value
+            workValues[inputKeyValue.key] = workValue
+            if workValue > maxVal {
+                maxVal = workValue
+                currentValue = inputKeyValue.key
+            }
+        }
+        workValues[currentValue!] = (workValues[currentValue!] ?? 0) - totalFrequency
+        loop += 1
     }
 }
