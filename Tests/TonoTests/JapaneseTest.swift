@@ -23,9 +23,8 @@ class JapaneseTest: XCTestCase {
     }
     
     func test_Fuzzy() {
-        let jp = Japanese()
-        XCTAssertEqual(jp.GetKeyJp("ＴＰＳの二本柱の一つは自働化です。"), "tpsノ2本柱ノ1ツハ自動化デス。")
-        XCTAssertEqual(jp.GetKeyJp("にゅーん、にょ-ん"), "ヌン、ニヨン")
-        XCTAssertEqual(jp.GetKeyJp("よくリードタイムを L/Tと略するけど分かりにくいよね"), "ヨクリドタイムオltト略スルケド分カリニクイヨネ")
+        XCTAssertEqual(Japanese.def.GetKeyJp("ＴＰＳの二本柱の一つは自働化です。"), "tpsノ2本柱ノ1ツハ自動化デス。")
+        XCTAssertEqual(Japanese.def.GetKeyJp("にゅーん、にょ-ん"), "ヌン、ニヨン")
+        XCTAssertEqual(Japanese.def.GetKeyJp("よくリードタイムを L/Tと略するけど分かりにくいよね"), "ヨクリドタイムオltト略スルケド分カリニクイヨネ")
     }
 }
