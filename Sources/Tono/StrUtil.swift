@@ -68,15 +68,46 @@ open class StrUtil {
         let i2 = str.index(i1, offsetBy: safeLen)
         return str[i1..<i2]
     }
+
+    public static func mid(_ str: String.SubSequence, start: Int, length: Int = 999999999) -> String.SubSequence {
+        if start >= str.count {
+            return str[str.endIndex..<str.endIndex]
+        }
+        var safeStart: Int = start
+        var safeLen: Int = length
+        if start < 0 {
+            safeLen = safeLen + start
+            safeStart = 0
+        }
+        if safeStart + safeLen >= str.count {
+            safeLen = str.count - safeStart
+        }
+        let i0 = str.startIndex
+        let i1 = str.index(i0, offsetBy: safeStart)
+        if safeLen < 1 {
+            return str[i1..<i1]
+        }
+        let i2 = str.index(i1, offsetBy: safeLen)
+        return str[i1..<i2]
+    }
+
     
     public static func left(_ str: String, length: Int) -> String.SubSequence {
         return mid(str, start: 0, length: length)
     }
-    
+
+    public static func left(_ str: String.SubSequence, length: Int) -> String.SubSequence {
+        return mid(str, start: 0, length: length)
+    }
+
     public static func right(_ str: String, length: Int) -> String.SubSequence {
         return mid(str, start: str.count - length)
     }
     
+    public static func right(_ str: String.SubSequence, length: Int) -> String.SubSequence {
+        return mid(str, start: str.count - length)
+    }
+
     static func parseBoolFuzzy(_ str: String) -> Bool? {
         let s = str.lowercased()
         switch s {

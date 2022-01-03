@@ -49,20 +49,14 @@ class GcmDistributerTestTest: XCTestCase {
         gcm.append(GcmNode(name: "A"), frequency: 6)
         gcm.append(GcmNode(name: "B"), frequency: 3)
         gcm.append(GcmNode(name: "C"), frequency: 1)
-
         let ret1 = Array(gcm)
         let retstr1 = ret1.compactMap { $0 as? GcmNode }.map{ $0.name }
-        var retjoin1 = retstr1.joined(separator: "")
-        
-        var nMatched = 0
-        let expected = "ABAABACABA"
-        for _ in 0..<gcm.count {
-            if retjoin1 == expected {
-                nMatched += 1
-            }
-            retjoin1 = "\(StrUtil.mid(retjoin1, start: 1))\(StrUtil.left(retjoin1, length: 1))"
-        }
-        XCTAssertGreaterThan(nMatched, 0)
+        let retjoin1 = retstr1.joined(separator: "")
+        XCTAssertEqual(retjoin1.count, 10)
+        XCTAssertEqual(retjoin1.filter{ $0 == "A" }.count, 6)
+        XCTAssertEqual(retjoin1.filter{ $0 == "B" }.count, 3)
+        XCTAssertEqual(retjoin1.filter{ $0 == "C" }.count, 1)
+        XCTAssertFalse(retjoin1.contains("BB"))
     }
     
     func test_value_strange1() {
@@ -99,17 +93,12 @@ class GcmDistributerTestTest: XCTestCase {
 
         let ret1 = Array(gcm)
         let retstr1 = ret1.compactMap { $0 as? GcmNode }.map{ $0.name }
-        var retjoin1 = retstr1.joined(separator: "")
-        
-        var nMatched = 0
-        let expected = "ABAABACABA"
-        for _ in 0..<gcm.count {
-            if retjoin1 == expected {
-                nMatched += 1
-            }
-            retjoin1 = "\(StrUtil.mid(retjoin1, start: 1))\(StrUtil.left(retjoin1, length: 1))"
-        }
-        XCTAssertGreaterThan(nMatched, 0)
+        let retjoin1 = retstr1.joined(separator: "")
+        XCTAssertEqual(retjoin1.count, 10)
+        XCTAssertEqual(retjoin1.filter{ $0 == "A" }.count, 6)
+        XCTAssertEqual(retjoin1.filter{ $0 == "B" }.count, 3)
+        XCTAssertEqual(retjoin1.filter{ $0 == "C" }.count, 1)
+        XCTAssertFalse(retjoin1.contains("BB"))
     }
     
     func test_No6_value_small() {
@@ -150,6 +139,5 @@ class GcmDistributerTestTest: XCTestCase {
         }
         XCTAssertEqual(nMatched, 1)
     }
-
 }
 

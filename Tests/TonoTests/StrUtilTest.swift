@@ -70,6 +70,14 @@ class StrUtilsTest: XCTestCase {
         XCTAssertEqual(StrUtil.mid(str, start:-4, length:3), "")
         XCTAssertEqual(StrUtil.mid(str, start:5), "FGHIJKLMN")
     }
+
+    func test_mid_left_right_mix() throws {
+        let str = "ABCDEFGHIJKLMN"
+        XCTAssertEqual(StrUtil.mid(str, start:2, length:3), "CDE")
+        XCTAssertEqual(StrUtil.left(StrUtil.mid(str, start:2, length:3), length: 2), "CD")
+        XCTAssertEqual(StrUtil.right(StrUtil.mid(str, start:2, length:3), length: 2), "DE")
+    }
+
     
     func test_parseBoolFuzzy() throws {
         XCTAssertTrue(StrUtil.parseBoolFuzzy("true") ?? false)
