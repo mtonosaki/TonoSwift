@@ -10,7 +10,7 @@ public struct Japanese
     var c2c1 = Dictionary<String, String>()       // for Passs1
     var hkana2c1 = Dictionary<String, String>()   // for Pass1(byte kana)
     
-    init() {
+    public init() {
         do {
             let from = "あいうえおぁぃぅぇぉヴかきくけこがぎぐげごさしすせそざじずぜぞたちつてとだぢヂづヅでどっなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよゃゅょらりるれろわをヲんａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９零一二三四五六七八九！”＃＄％＆’（）＝－＾～￥｜／｛｝［］＜＞，．＿";
             let to = "アイウエオァィゥェォブカキクケコガギグゲゴサシスセソザジズゼゾタチツテトダジジズズデドッナニヌネノハヒフヘホバビブベボパピプペポマミムメモヤユヨャュョラリルレロワオオンabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz01234567890123456789!\"#$%&'()=-^~\\|/{}[]<>,._";
