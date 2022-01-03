@@ -7,6 +7,8 @@ import Foundation
 
 public struct Japanese
 {
+    public static let def = Japanese()
+    
     var c2c1 = Dictionary<String, String>()       // for Passs1
     var hkana2c1 = Dictionary<String, String>()   // for Pass1(byte kana)
     
