@@ -9,7 +9,7 @@ import Foundation
 // try to find loop distance version TSP resolver.
 open class TspResolverLoop: TspResolver {
 
-    func solve(data: [TspNode]) -> [TspNode] {
+    public func solve(data: [TspNode]) -> [TspNode] {
         nodes = Array(data)
         guard var nodes = nodes else { fatalError()}
         var indexes = (0..<nodes.count).map{ $0 }
@@ -43,7 +43,7 @@ open class TspResolverLoop: TspResolver {
 // Try to find optimized start to end sequence version TSP resolver
 open class TspResolverStartEndFix : TspResolver {
 
-    func solve(data: [TspNode]) -> [TspNode] {
+    public func solve(data: [TspNode]) -> [TspNode] {
         nodes = Array(data)
         guard var nodes = nodes else { fatalError()}
         var indexes = (0..<nodes.count).map{ $0 }
@@ -78,7 +78,7 @@ open class TspResolverStartEndFix : TspResolver {
 // Try to find the total optimized sequence version TSP resolver
 open class TspResolverShuffle : TspResolver {
 
-    func solve(data: [TspNode]) -> [TspNode] {
+    public func solve(data: [TspNode]) -> [TspNode] {
         nodes = Array(data)
         guard var nodes = nodes else { fatalError()}
         var indexes = (0..<nodes.count).map{ $0 }
