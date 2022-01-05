@@ -124,7 +124,7 @@ public protocol TspResolverDelegate {
 
 open class TspResolver {
 
-    final var delegate: TspResolverDelegate? = nil
+    final public var delegate: TspResolverDelegate? = nil
     internal var nodes: Array<TspNode>? = nil
     
     public init() {
