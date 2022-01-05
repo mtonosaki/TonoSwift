@@ -127,6 +127,9 @@ open class TspResolver {
     final var delegate: TspResolverDelegate? = nil
     internal var nodes: Array<TspNode>? = nil
     
+    public init() {
+    }
+    
     // Cost Calculator
     func calcCost(indexArray: [Int]) -> Double {
         fatalError("need implement this method")
