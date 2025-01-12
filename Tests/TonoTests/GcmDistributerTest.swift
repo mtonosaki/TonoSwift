@@ -77,7 +77,7 @@ class GcmDistributerTestTest: XCTestCase {
     }
     
     func test_value_strange3() {
-        var gcm = GcmDistributer()
+        let gcm = GcmDistributer()
         XCTAssertEqual(gcm.count, 0)
         XCTAssertEqual(Array(gcm).count, 0)
     }

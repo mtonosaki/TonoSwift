@@ -85,4 +85,9 @@ class StrUtilsTest: XCTestCase {
         XCTAssertTrue(StrUtil.parseBoolFuzzy("yes") ?? false)
         XCTAssertFalse(StrUtil.parseBoolFuzzy("hoge") ?? false) // test default value
     }
+    
+    func test_isUuid() throws {
+        XCTAssertTrue(StrUtil.isUuid("12345678-1234-1234-1234-1234567890ab"))
+        XCTAssertFalse(StrUtil.isUuid("12345678-1234-1234-1234-123"))
+    }
 }

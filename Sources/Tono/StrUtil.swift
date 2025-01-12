@@ -8,6 +8,18 @@ import Foundation
 
 open class StrUtil {
     
+    public static func isUuid(_ str: String) -> Bool {
+        let pattern =
+            #"([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})"#
+        if #available(iOS 16.0, *) {
+            if #available(macOS 13.0, *) {
+                let regex = try! Regex(pattern)
+                return str.firstMatch(of: regex) != nil
+            }
+        }
+        return false
+    }
+    
     public static func isIntegerString(_ str: String ) -> Bool {
         var index = str.startIndex
         for i in 0..<str.count {
