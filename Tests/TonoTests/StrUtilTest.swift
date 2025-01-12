@@ -88,6 +88,11 @@ class StrUtilsTest: XCTestCase {
     
     func test_isUuid() throws {
         XCTAssertTrue(StrUtil.isUuid("12345678-1234-1234-1234-1234567890ab"))
+        XCTAssertFalse(StrUtil.isUuid("123456789-1234-1234-1234-1234567890ab"))
         XCTAssertFalse(StrUtil.isUuid("12345678-1234-1234-1234-123"))
+        
+        let uuid = "12345678-1234-1234-1234-1234567890ab"
+        let uuidsec = uuid[uuid.startIndex..<uuid.endIndex]
+        XCTAssertTrue(StrUtil.isUuid(uuidsec))
     }
 }

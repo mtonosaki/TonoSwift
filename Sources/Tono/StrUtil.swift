@@ -9,8 +9,13 @@ import Foundation
 open class StrUtil {
     
     public static func isUuid(_ str: String) -> Bool {
+        let sub = str[str.startIndex..<str.endIndex]
+        return isUuid(sub)
+    }
+    
+    public static func isUuid(_ str: String.SubSequence) -> Bool {
         let pattern =
-            #"([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})"#
+            #"^([0-9a-f]{8})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{4})-([0-9a-f]{12})$"#
         if #available(iOS 16.0, *) {
             if #available(macOS 13.0, *) {
                 let regex = try! Regex(pattern)
@@ -19,6 +24,8 @@ open class StrUtil {
         }
         return false
     }
+    
+    
     
     public static func isIntegerString(_ str: String ) -> Bool {
         var index = str.startIndex
