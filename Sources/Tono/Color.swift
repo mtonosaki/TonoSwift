@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(macOS 11.0, *)
-extension Color {
+public extension Color {
     init(sharpAndHexString: String) {
         let start = sharpAndHexString.index(
             sharpAndHexString.startIndex, offsetBy: 1)
