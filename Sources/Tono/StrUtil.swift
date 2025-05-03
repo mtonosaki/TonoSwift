@@ -8,6 +8,13 @@ import Foundation
 
 open class StrUtil {
     
+    public static func isEmpty(_ str: String?) -> Bool {
+        guard let str = str else {
+            return true
+        }
+        return str.isEmpty
+    }
+    
     public static func isUuid(_ str: String) -> Bool {
         let sub = str[str.startIndex..<str.endIndex]
         return isUuid(sub)
