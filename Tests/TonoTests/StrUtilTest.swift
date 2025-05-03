@@ -95,4 +95,11 @@ class StrUtilsTest: XCTestCase {
         let uuidsec = uuid[uuid.startIndex..<uuid.endIndex]
         XCTAssertTrue(StrUtil.isUuid(uuidsec))
     }
+    
+    func test_isEmpty() throws {
+        XCTAssertTrue(StrUtil.isEmpty(""))
+        XCTAssertTrue(StrUtil.isEmpty(nil))
+        XCTAssertFalse(StrUtil.isEmpty(" "))
+        XCTAssertFalse(StrUtil.isEmpty("hoge"))
+    }
 }
