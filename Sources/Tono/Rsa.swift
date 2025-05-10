@@ -1,9 +1,6 @@
-//
-//  Rsa.swift
-//  Tono
-//
-//  Created by Manabu Tonosaki on 2025/05/10.
-//
+// Tono (Tools Of New Operation) library
+//  MIT Lisence (c) 2025 Manabu Tonosaki all rights reserved
+//  Created by Manabu Tonosaki on 2025/05/10
 
 import Foundation
 import Security
@@ -17,7 +14,7 @@ enum RsaException: LocalizedError {
 
 typealias Base64String = String
 
-struct Rsa {
+open class Rsa {
     var nameMain: String
     var nameSub: String
 
