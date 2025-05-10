@@ -5,14 +5,14 @@
 import Foundation
 import Security
 
-enum RsaException: LocalizedError {
+public enum RsaException: LocalizedError {
     case encrypt(String)
     case decrypt(String)
     case sign(String)
     case verify(String)
 }
 
-typealias Base64String = String
+public typealias Base64String = String
 
 open class Rsa {
     var nameMain: String
@@ -31,7 +31,7 @@ open class Rsa {
         "\(nameMain) -- \(nameSub)"
     }
 
-    init(nameMain: String, nameSub: String) {
+    public init(nameMain: String, nameSub: String) {
         self.nameMain = nameMain
         self.nameSub = nameSub
 
@@ -81,7 +81,7 @@ open class Rsa {
         return generatedPrivateKey
     }
 
-    func getMyPublicKey() throws -> Base64String {
+    public func getMyPublicKey() throws -> Base64String {
         guard let myPublicKey = self.myPublicKey else {
             throw RsaException.encrypt("public key is not ready")
         }
@@ -92,7 +92,7 @@ open class Rsa {
         return publicKeyBase64
     }
 
-    static func getPublicKey(publicKeyBase64: Base64String) throws -> SecKey {
+    public static func getPublicKey(publicKeyBase64: Base64String) throws -> SecKey {
         let keyData = Data(base64Encoded: publicKeyBase64, options: [.ignoreUnknownCharacters])!
         let sizeInBits = keyData.count * 8
         let keyDict: [CFString: Any] = [
@@ -108,26 +108,26 @@ open class Rsa {
         return publicKey
     }
 
-    func encryptWithMyPublicKey(plainText: String) throws -> Base64String {
+    public func encryptWithMyPublicKey(plainText: String) throws -> Base64String {
         guard let myPublicKey = self.myPublicKey else {
             throw RsaException.encrypt("public key is not ready")
         }
         return try Rsa.encryptWithSpecifiedKey(plainText: plainText, key: myPublicKey)
     }
 
-    func encryptWithMyPrivateKey(plainText: String) throws -> Base64String {
+    public func encryptWithMyPrivateKey(plainText: String) throws -> Base64String {
         guard let myPrivateKey = self.myPrivateKey else {
             throw RsaException.encrypt("private key is not ready")
         }
         return try Rsa.encryptWithSpecifiedKey(plainText: plainText, key: myPrivateKey)
     }
 
-    static func encryptWithSpecifiedPublicKey(plainText: String, publicKeyBase64: Base64String) throws -> Base64String {
+    public static func encryptWithSpecifiedPublicKey(plainText: String, publicKeyBase64: Base64String) throws -> Base64String {
         let publicKey = try Rsa.getPublicKey(publicKeyBase64: publicKeyBase64)
         return try encryptWithSpecifiedKey(plainText: plainText, key: publicKey)
     }
 
-    static func encryptWithSpecifiedKey(plainText: String, key: SecKey) throws -> Base64String {
+    public static func encryptWithSpecifiedKey(plainText: String, key: SecKey) throws -> Base64String {
         guard SecKeyIsAlgorithmSupported(key, .encrypt, algorithmEncrypt) else {
             throw RsaException.encrypt("an algorithm is not suppoted")
         }
@@ -152,7 +152,7 @@ open class Rsa {
         return cipherBase64
     }
     
-    static func decryptWithPrivateKey(cipherBase64: Base64String, privateKey: SecKey) throws -> String {
+    public static func decryptWithPrivateKey(cipherBase64: Base64String, privateKey: SecKey) throws -> String {
         guard SecKeyIsAlgorithmSupported(privateKey, .decrypt, Rsa.algorithmEncrypt) else {
             throw RsaException.decrypt("an algorithm is not suppoted")
         }
@@ -182,21 +182,21 @@ open class Rsa {
         return clearString
     }
 
-    func decryptWithMyPrivateKey(cipherBase64: Base64String) throws -> String {
+    public func decryptWithMyPrivateKey(cipherBase64: Base64String) throws -> String {
         guard let myPrivateKey = self.myPrivateKey else {
             throw RsaException.decrypt("private key is not ready")
         }
         return try Rsa.decryptWithPrivateKey(cipherBase64: cipherBase64, privateKey: myPrivateKey)
     }
     
-    func decryptWithMyPublicKey(cipherBase64: Base64String) throws -> String {
+    public func decryptWithMyPublicKey(cipherBase64: Base64String) throws -> String {
         guard let myPublicKey = self.myPublicKey else {
             throw RsaException.decrypt("public key is not ready")
         }
         return try Rsa.decryptWithPrivateKey(cipherBase64: cipherBase64, privateKey: myPublicKey)
     }
 
-    func createSignatureWithMyPrivateKey(plainText: String) throws -> Base64String {
+    public func createSignatureWithMyPrivateKey(plainText: String) throws -> Base64String {
         guard let myPrivateKey = self.myPrivateKey else {
             throw RsaException.decrypt("private key is not ready")
         }
@@ -221,7 +221,7 @@ open class Rsa {
         return signatureBase64
     }
 
-    static func verifySignWithPublicKey(plainText: String, signatureBase64: Base64String, publicKey: SecKey) throws -> Bool {
+    public static func verifySignWithPublicKey(plainText: String, signatureBase64: Base64String, publicKey: SecKey) throws -> Bool {
         let signatureVerify = Data(base64Encoded: signatureBase64, options: [])
         guard SecKeyIsAlgorithmSupported(publicKey, .verify, algorithmSign) else {
             throw RsaException.verify("an algorithm is not suppoted")
@@ -243,13 +243,13 @@ open class Rsa {
         return true
     }
 
-    static func verifySignWithPublicKey(plainText: String, signatureBase64: Base64String, publicKeyBase64: Base64String) throws -> Bool
+    public static func verifySignWithPublicKey(plainText: String, signatureBase64: Base64String, publicKeyBase64: Base64String) throws -> Bool
     {
         let publicKey = try Rsa.getPublicKey(publicKeyBase64: publicKeyBase64)
         return try verifySignWithPublicKey(plainText: plainText, signatureBase64: signatureBase64, publicKey: publicKey)
     }
 
-    func verifySignWithMyPublicKey(plainText: String, signatureBase64: Base64String) throws -> Bool {
+    public func verifySignWithMyPublicKey(plainText: String, signatureBase64: Base64String) throws -> Bool {
         guard let myPublicKey = self.myPublicKey else {
             throw RsaException.verify("public key is not ready")
         }
