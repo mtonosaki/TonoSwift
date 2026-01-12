@@ -8,7 +8,7 @@
 import Foundation
 import CryptoKit
 
-@available(macOS 10.15, *)
+@available(macOS 10.15, iOS 13.0, *)
 class Aes {
     enum Error: LocalizedError {
         case stringToDataFailed
@@ -31,7 +31,7 @@ class Aes {
         return self._symmetricKey
     }
     
-    func encrypt(plainText: String) throws -> String {
+    func encrypt(plainText: String) throws -> Base64String {
         guard let data = plainText.data(using: .utf8) else {
             throw Error.stringToDataFailed
         }
@@ -43,7 +43,7 @@ class Aes {
         return combinedBase64String
     }
     
-    func decrypt(base64String: String) throws -> String {
+    func decrypt(base64String: Base64String) throws -> String {
         guard let combinedData = Data(base64Encoded: base64String, options: []) else {
             throw Error.base64ToDataFailed
         }
@@ -65,11 +65,11 @@ extension SymmetricKey {
         case base64ToDataFailed
     }
 
-    func toBase64() -> String {
+    func toBase64() -> Base64String {
         return self.withUnsafeBytes { Data($0) }.base64EncodedString()
     }
     
-    init(base64String: String) throws {
+    init(base64String: Base64String) throws {
         guard let data = Data(base64Encoded: base64String, options: []) else {
             throw Base64Error.base64ToDataFailed
         }

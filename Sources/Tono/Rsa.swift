@@ -5,8 +5,7 @@
 import Foundation
 import Security
 
-public typealias Base64String = String
-
+@available(macOS 10.15, iOS 13.0, *)
 open class Rsa {
     public enum Error: LocalizedError {
         case encrypt(String)
