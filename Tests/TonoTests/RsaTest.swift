@@ -25,6 +25,56 @@ class RsaTest: XCTestCase {
         }
     }
     
+    func test_inputLengthShouldBeLessThan126() {
+        // GIVEN
+        let rsa = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
+        let text125 = StrUtil.rep("A", n: 125)
+        let text126 = StrUtil.rep("A", n: 126)
+        XCTAssertNoThrow(try rsa.encryptWithMyPublicKey(plainText: text125), "Should be success")
+        
+        do {
+            // WHEN
+            _ = try rsa.encryptWithMyPublicKey(plainText: text126)
+            XCTFail("Test failed because no error was thrown")
+        } catch {
+            // THEN
+            if let rsaError = error as? Rsa.Error {
+                switch rsaError {
+                case .encrypt(let msg):
+                    XCTAssertEqual(msg, "plainText is too long", "Should be thrown exception")
+                default:
+                    XCTFail("Unexpected RsaException: \(rsaError)")
+                }
+            } else {
+                XCTFail("Unexpected exception: \(error)")
+            }
+        }
+    }
+    
+    func test_inputSizeShouldBeLessThan126ConsideringMultiByteCharacters() {
+        // GIVEN
+        let rsa = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
+        let kanji125 = StrUtil.rep("悪", n: 125)
+        
+        do {
+            // WHEN
+            _ = try rsa.encryptWithMyPublicKey(plainText: kanji125)
+            XCTFail("Test failed because no error was thrown")
+        } catch {
+            // THEN
+            if let rsaError = error as? Rsa.Error {
+                switch rsaError {
+                case .encrypt(let msg):
+                    XCTAssertEqual(msg, "plainText is too long", "Should be thrown exception")
+                default:
+                    XCTFail("Unexpected RsaException: \(rsaError)")
+                }
+            } else {
+                XCTFail("Unexpected exception: \(error)")
+            }
+        }
+    }
+    
     func test_whenSignTHenVerify() {
         do {
             // WHEN: A sign the text
