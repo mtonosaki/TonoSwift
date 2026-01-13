@@ -59,7 +59,7 @@ class Aes {
     }
 }
 
-@available(macOS 10.15, *)
+@available(macOS 10.15, iOS 13.0, *)
 extension SymmetricKey {
     enum Base64Error: Error {
         case base64ToDataFailed
