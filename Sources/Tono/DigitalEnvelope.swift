@@ -9,13 +9,13 @@ import Foundation
 import CryptoKit
 
 @available(macOS 10.15, iOS 13.0, *)
-class DigitalEnvelope {
+public class DigitalEnvelope {
     struct Message: Codable {
         let encryptedBody: String // AESで暗号化された本来のメッセージ
         let encryptedKey: String  // RSA(受信者の公開鍵)で暗号化されたAESキー
     }
     
-    enum Error: LocalizedError {
+    public enum Error: LocalizedError {
         case keyRestorationFailed
         case encodingFailed
         case decodingFailed
@@ -23,7 +23,7 @@ class DigitalEnvelope {
         case decryptionFailed
     }
     
-    static func seal(plainText: String, recipientPublicKeyBase64: Base64String) throws -> SealedEnvelope {
+    public static func seal(plainText: String, recipientPublicKeyBase64: Base64String) throws -> SealedEnvelope {
         let aes = Aes()
         let encryptedBody = try aes.encrypt(plainText: plainText)
         let aesKeyBase64 = aes.symmetricKey.toBase64()
@@ -38,7 +38,7 @@ class DigitalEnvelope {
         return jsonData.base64EncodedString()
     }
     
-    static func open(sealedString: SealedEnvelope, myRsa: Rsa) throws -> String {
+    public static func open(sealedString: SealedEnvelope, myRsa: Rsa) throws -> String {
         guard let jsonData = Data(base64Encoded: sealedString) else {
             throw Error.invalidEnvelopeFormat
         }
