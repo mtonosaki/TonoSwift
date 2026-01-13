@@ -5,16 +5,15 @@
 import Foundation
 import Security
 
-public enum RsaException: LocalizedError {
-    case encrypt(String)
-    case decrypt(String)
-    case sign(String)
-    case verify(String)
-}
-
-public typealias Base64String = String
-
+@available(macOS 10.15, iOS 13.0, *)
 open class Rsa {
+    public enum Error: LocalizedError {
+        case encrypt(String)
+        case decrypt(String)
+        case sign(String)
+        case verify(String)
+    }
+
     var nameMain: String
     var nameSub: String
 
@@ -83,10 +82,10 @@ open class Rsa {
 
     public func getMyPublicKey() throws -> Base64String {
         guard let myPublicKey = self.myPublicKey else {
-            throw RsaException.encrypt("public key is not ready")
+            throw Error.encrypt("public key is not ready")
         }
         guard let publicKeyData = (SecKeyCopyExternalRepresentation(myPublicKey, nil) as Data?) else {
-            throw RsaException.encrypt("cannot make public key data")
+            throw Error.encrypt("cannot make public key data")
         }
         let publicKeyBase64 = publicKeyData.base64EncodedString(options: [])
         return publicKeyBase64
@@ -103,21 +102,21 @@ open class Rsa {
         ]
         var error: Unmanaged<CFError>?
         guard let publicKey = SecKeyCreateWithData(keyData as CFData, keyDict as CFDictionary, &error) else {
-            throw RsaException.encrypt("cannot create public key")
+            throw Error.encrypt("cannot create public key")
         }
         return publicKey
     }
 
     public func encryptWithMyPublicKey(plainText: String) throws -> Base64String {
         guard let myPublicKey = self.myPublicKey else {
-            throw RsaException.encrypt("public key is not ready")
+            throw Error.encrypt("public key is not ready")
         }
         return try Rsa.encryptWithSpecifiedKey(plainText: plainText, key: myPublicKey)
     }
 
     public func encryptWithMyPrivateKey(plainText: String) throws -> Base64String {
         guard let myPrivateKey = self.myPrivateKey else {
-            throw RsaException.encrypt("private key is not ready")
+            throw Error.encrypt("private key is not ready")
         }
         return try Rsa.encryptWithSpecifiedKey(plainText: plainText, key: myPrivateKey)
     }
@@ -129,10 +128,12 @@ open class Rsa {
 
     public static func encryptWithSpecifiedKey(plainText: String, key: SecKey) throws -> Base64String {
         guard SecKeyIsAlgorithmSupported(key, .encrypt, algorithmEncrypt) else {
-            throw RsaException.encrypt("an algorithm is not suppoted")
+            throw Error.encrypt("an algorithm is not suppoted")
         }
-        guard plainText.count < (SecKeyGetBlockSize(key) - 130) else {
-            throw RsaException.encrypt("plainText is too long")
+        let secKeyBlockSize = SecKeyGetBlockSize(key)
+        let textSize = plainText.data(using: .utf8)?.count ?? 32767
+        guard textSize < (secKeyBlockSize - 130) else {
+            throw Error.encrypt("plainText is too long")
         }
 
         let plainData = plainText.data(using: .utf8)!
@@ -145,7 +146,7 @@ open class Rsa {
                 &error
             ) as Data?
         else {
-            throw error!.takeRetainedValue() as Error
+            throw error!.takeRetainedValue() as CFError
         }
 
         let cipherBase64 = cipherData.base64EncodedString()
@@ -154,14 +155,14 @@ open class Rsa {
     
     public static func decryptWithPrivateKey(cipherBase64: Base64String, privateKey: SecKey) throws -> String {
         guard SecKeyIsAlgorithmSupported(privateKey, .decrypt, Rsa.algorithmEncrypt) else {
-            throw RsaException.decrypt("an algorithm is not suppoted")
+            throw Error.decrypt("an algorithm is not suppoted")
         }
 
         guard let cipherData = Data(base64Encoded: cipherBase64, options: []) else {
-            throw RsaException.decrypt("cannot decode the input base64")
+            throw Error.decrypt("cannot decode the input base64")
         }
         guard cipherData.count == SecKeyGetBlockSize(privateKey) else {
-            throw RsaException.decrypt("input string is too long")
+            throw Error.decrypt("input string is too long")
         }
 
         var error: Unmanaged<CFError>?
@@ -173,35 +174,35 @@ open class Rsa {
                 &error
             ) as Data?
         else {
-            throw error!.takeRetainedValue() as Error
+            throw error!.takeRetainedValue() as CFError
         }
 
         guard let clearString = String(data: clearData, encoding: .utf8) else {
-            throw RsaException.decrypt("cannot convert data to string")
+            throw Error.decrypt("cannot convert data to string")
         }
         return clearString
     }
 
     public func decryptWithMyPrivateKey(cipherBase64: Base64String) throws -> String {
         guard let myPrivateKey = self.myPrivateKey else {
-            throw RsaException.decrypt("private key is not ready")
+            throw Error.decrypt("private key is not ready")
         }
         return try Rsa.decryptWithPrivateKey(cipherBase64: cipherBase64, privateKey: myPrivateKey)
     }
     
     public func decryptWithMyPublicKey(cipherBase64: Base64String) throws -> String {
         guard let myPublicKey = self.myPublicKey else {
-            throw RsaException.decrypt("public key is not ready")
+            throw Error.decrypt("public key is not ready")
         }
         return try Rsa.decryptWithPrivateKey(cipherBase64: cipherBase64, privateKey: myPublicKey)
     }
 
     public func createSignatureWithMyPrivateKey(plainText: String) throws -> Base64String {
         guard let myPrivateKey = self.myPrivateKey else {
-            throw RsaException.decrypt("private key is not ready")
+            throw Error.decrypt("private key is not ready")
         }
         guard SecKeyIsAlgorithmSupported(myPrivateKey, .sign, Rsa.algorithmSign) else {
-            throw RsaException.sign("an algorithm is not suppoted")
+            throw Error.sign("an algorithm is not suppoted")
         }
 
         let plainData = plainText.data(using: .utf8)!
@@ -214,7 +215,7 @@ open class Rsa {
                 &error
             ) as Data?
         else {
-            throw error!.takeRetainedValue() as Error
+            throw error!.takeRetainedValue() as CFError
         }
 
         let signatureBase64 = signature.base64EncodedString()
@@ -224,7 +225,7 @@ open class Rsa {
     public static func verifySignWithPublicKey(plainText: String, signatureBase64: Base64String, publicKey: SecKey) throws -> Bool {
         let signatureVerify = Data(base64Encoded: signatureBase64, options: [])
         guard SecKeyIsAlgorithmSupported(publicKey, .verify, algorithmSign) else {
-            throw RsaException.verify("an algorithm is not suppoted")
+            throw Error.verify("an algorithm is not suppoted")
         }
 
         let plainData = plainText.data(using: .utf8)!
@@ -251,7 +252,7 @@ open class Rsa {
 
     public func verifySignWithMyPublicKey(plainText: String, signatureBase64: Base64String) throws -> Bool {
         guard let myPublicKey = self.myPublicKey else {
-            throw RsaException.verify("public key is not ready")
+            throw Error.verify("public key is not ready")
         }
         return try Rsa.verifySignWithPublicKey(
             plainText: plainText,
