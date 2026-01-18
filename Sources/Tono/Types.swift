@@ -6,4 +6,4 @@
 //
 
 public typealias Base64String = String
-public typealias SealedEnvelope = Base64String
+public typealias SealedEnvelopeBase64String = Base64String
