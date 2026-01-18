@@ -11,8 +11,8 @@ import CryptoKit
 @available(macOS 10.15, iOS 13.0, *)
 public class DigitalEnvelope {
     struct Message: Codable {
-        let encryptedBody: String // AESで暗号化された本来のメッセージ
-        let encryptedKey: String  // RSA(受信者の公開鍵)で暗号化されたAESキー
+        let encryptedBody: Base64String
+        let encryptedKey: Base64String
     }
     
     public enum Error: LocalizedError {
