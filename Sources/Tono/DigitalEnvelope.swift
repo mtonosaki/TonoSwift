@@ -23,7 +23,7 @@ public class DigitalEnvelope {
         case decryptionFailed
     }
     
-    public static func seal(plainText: String, recipientPublicKeyBase64: Base64String) throws -> SealedEnvelope {
+    public static func seal(plainText: String, recipientPublicKeyBase64: Base64String) throws -> SealedEnvelopeBase64String {
         let aes = Aes()
         let encryptedBody = try aes.encrypt(plainText: plainText)
         let aesKeyBase64 = aes.symmetricKey.toBase64()
@@ -38,7 +38,7 @@ public class DigitalEnvelope {
         return jsonData.base64EncodedString()
     }
     
-    public static func open(sealedString: SealedEnvelope, myRsa: Rsa) throws -> String {
+    public static func open(sealedString: SealedEnvelopeBase64String, myRsa: Rsa) throws -> String {
         guard let jsonData = Data(base64Encoded: sealedString) else {
             throw Error.invalidEnvelopeFormat
         }
