@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "D8BDE4EC-D285-4A18-8FA4-C9F3B9AB1E4F",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "TonoTests",
+        "name" : "TonoTests"
+      }
+    }
+  ],
+  "version" : 1
+}

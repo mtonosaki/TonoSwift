@@ -9,16 +9,40 @@ import XCTest
 
 @testable import Tono
 
-class RsaTest: XCTestCase {
+class RsaLocalKeyChainTest: RsaBaseTest {
+    override func createRsaInstance(nameMain: String, nameSub: String) -> Rsa {
+        return RsaLocalKeyChain(nameMain: nameMain, nameSub: nameSub)
+    }
+}
+
+class RsaBaseTest: XCTestCase {
+    var rsaA: Rsa!
+    var rsaB: Rsa!
+    
+    func createRsaInstance(nameMain: String, nameSub: String) -> Rsa {
+        fatalError("Subclasses must override createRsaInstance")
+    }
+    
+    override class var defaultTestSuite: XCTestSuite {
+        if self == RsaBaseTest.self {
+            return XCTestSuite(name: "Skipping Base Test")
+        }
+        return super.defaultTestSuite
+    }
+    
+    override func setUpWithError() throws {
+        rsaA = createRsaInstance(nameMain: "com.tomarika.tonoswift.test", nameSub: "persona-a")
+        rsaB = createRsaInstance(nameMain: "com.tomarika.tonoswift.test", nameSub: "persona-b")
+    }
+
 
     func test_whenEncryptWithMyPublicKeyThenDecryptWithMyPrivateKey() {
         do {
             // WHEN: A encrypt text with A's public key
-            let rsa = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
-            let cipherBase64 = try rsa.encryptWithMyPublicKey(plainText: "Hello, Secret World!")
+            let cipherBase64 = try rsaA.encryptWithMyPublicKey(plainText: "Hello, Secret World!")
             
             // THEN: A can decrypt it with A's private key
-            let plainText = try rsa.decryptWithMyPrivateKey(cipherBase64: cipherBase64)
+            let plainText = try rsaA.decryptWithMyPrivateKey(cipherBase64: cipherBase64)
             XCTAssertEqual("Hello, Secret World!", plainText)
         } catch {
             XCTFail(error.localizedDescription)
@@ -27,18 +51,17 @@ class RsaTest: XCTestCase {
     
     func test_inputLengthShouldBeLessThan126() {
         // GIVEN
-        let rsa = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
         let text125 = StrUtil.rep("A", n: 125)
         let text126 = StrUtil.rep("A", n: 126)
-        XCTAssertNoThrow(try rsa.encryptWithMyPublicKey(plainText: text125), "Should be success")
+        XCTAssertNoThrow(try rsaA.encryptWithMyPublicKey(plainText: text125), "Should be success")
         
         do {
             // WHEN
-            _ = try rsa.encryptWithMyPublicKey(plainText: text126)
+            _ = try rsaA.encryptWithMyPublicKey(plainText: text126)
             XCTFail("Test failed because no error was thrown")
         } catch {
             // THEN
-            if let rsaError = error as? Rsa.Error {
+            if let rsaError = error as? RsaLocalKeyChain.Error {
                 switch rsaError {
                 case .encrypt(let msg):
                     XCTAssertEqual(msg, "plainText is too long", "Should be thrown exception")
@@ -53,16 +76,15 @@ class RsaTest: XCTestCase {
     
     func test_inputSizeShouldBeLessThan126ConsideringMultiByteCharacters() {
         // GIVEN
-        let rsa = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
         let kanji125 = StrUtil.rep("悪", n: 125)
         
         do {
             // WHEN
-            _ = try rsa.encryptWithMyPublicKey(plainText: kanji125)
+            _ = try rsaA.encryptWithMyPublicKey(plainText: kanji125)
             XCTFail("Test failed because no error was thrown")
         } catch {
             // THEN
-            if let rsaError = error as? Rsa.Error {
+            if let rsaError = error as? RsaLocalKeyChain.Error {
                 switch rsaError {
                 case .encrypt(let msg):
                     XCTAssertEqual(msg, "plainText is too long", "Should be thrown exception")
@@ -78,11 +100,10 @@ class RsaTest: XCTestCase {
     func test_whenSignTHenVerify() {
         do {
             // WHEN: A sign the text
-            let rsa = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
-            let signatureBase64 = try rsa.createSignatureWithMyPrivateKey(plainText: "Hello, Secret World!")
+            let signatureBase64 = try rsaA.createSignatureWithMyPrivateKey(plainText: "Hello, Secret World!")
             
             // THEN: A can verify it with A theirself
-            XCTAssertTrue(try rsa.verifySignWithMyPublicKey(plainText: "Hello, Secret World!", signatureBase64: signatureBase64))
+            XCTAssertTrue(try rsaA.verifySignWithMyPublicKey(plainText: "Hello, Secret World!", signatureBase64: signatureBase64))
         }
         catch{
             XCTFail(error.localizedDescription)
@@ -92,11 +113,10 @@ class RsaTest: XCTestCase {
     func test_when_B_encrypt_with_publicKey_of_A_then_A_decrypt_with_privateKey_of_A() {
         do {
             // GIVEN: A provide their public key
-            let rsaA = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-a")
             let publicKeyA = try rsaA.getMyPublicKey()
 
             // WHEN: B encrypt with A's public key
-            let encryptedBase64 = try Rsa.encryptWithSpecifiedPublicKey(plainText: "Hoge", publicKeyBase64: publicKeyA)
+            let encryptedBase64 = try RsaLocalKeyChain.encryptWithSpecifiedPublicKey(plainText: "Hoge", publicKeyBase64: publicKeyA)
             
             // THEN: A can decrypt with A's private key
             let plainText = try rsaA.decryptWithMyPrivateKey(cipherBase64: encryptedBase64)
@@ -107,18 +127,16 @@ class RsaTest: XCTestCase {
         }
     }
     
-    func test_when_B_provide_sign_then_A_can_verify() {
+    func test_when_B_provide_sign_then_somebody_can_verify() {
         do {
-            // GIVEN: A provide A's public key
-            let rsaA = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-b")
-            let publicKeyA = try rsaA.getMyPublicKey()
+            // GIVEN: B provide B's public key
+            let publicKeyB = try rsaB.getMyPublicKey()
             
             // WHEN: B sign with B's private key
-            let rsaB = Rsa(nameMain: "com.tomarika.tonoswift", nameSub: "persona-b")
             let signatureB = try rsaB.createSignatureWithMyPrivateKey(plainText: "Fuga" )
             
-            // THEN: A can verify with B's public key
-            let isOk = try Rsa.verifySignWithPublicKey(plainText: "Fuga", signatureBase64: signatureB, publicKeyBase64: publicKeyA)
+            // THEN: Somebody can verify B with B's public key
+            let isOk = try rsaA.verifySignWithPublicKey(plainText: "Fuga", signatureBase64: signatureB, publicKeyBase64: publicKeyB)
             XCTAssertTrue(isOk)
         }
         catch{

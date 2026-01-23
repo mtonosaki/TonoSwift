@@ -27,7 +27,7 @@ public class DigitalEnvelope {
         let aes = Aes()
         let encryptedBody = try aes.encrypt(plainText: plainText)
         let aesKeyBase64 = aes.symmetricKey.toBase64()
-        let encryptedAesKey = try Rsa.encryptWithSpecifiedPublicKey(
+        let encryptedAesKey = try RsaLocalKeyChain.encryptWithSpecifiedPublicKey(
             plainText: aesKeyBase64,
             publicKeyBase64: recipientPublicKeyBase64
         )

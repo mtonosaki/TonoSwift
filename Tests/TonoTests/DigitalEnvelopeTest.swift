@@ -14,13 +14,9 @@ class DigitalEnvelopeTests: XCTestCase {
     var rsaHanako: Rsa!
     
     override func setUpWithError() throws {
-        rsaTomomi = Rsa(nameMain: "TonoSwift.TestEnv", nameSub: "Tomomi")
-        rsaMasahiko = Rsa(nameMain: "TonoSwift.TestEnv", nameSub: "Masahiko")
-        rsaHanako = Rsa(nameMain: "TonoSwift.TestEnv", nameSub: "Hanako")
-    }
-    
-    override func tearDownWithError() throws {
-        // 必要であればキーチェーンのクリーンアップ処理をここに記述
+        rsaTomomi = RsaLocalKeyChain(nameMain: "com.tomarika.tonoswift.test", nameSub: "Tomomi")
+        rsaMasahiko = RsaLocalKeyChain(nameMain: "com.tomarika.tonoswift.test", nameSub: "Masahiko")
+        rsaHanako = RsaLocalKeyChain(nameMain: "com.tomarika.tonoswift.test", nameSub: "Hanako")
     }
     
     func test_SealAndOpen_inOnePerson_Success() throws {
