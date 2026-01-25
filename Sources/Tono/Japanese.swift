@@ -2,6 +2,9 @@
 //  MIT Lisence (c) 2021 Manabu Tonosaki all rights reserved
 //
 //  Created by Manabu Tonosaki on 2022/01/03.
+//
+// usage:
+// Japanese.def.getKeyJp("せろファンテープ") →  セロハンテプ
 
 import Foundation
 
@@ -11,6 +14,11 @@ public struct Japanese
     
     var c2c1 = Dictionary<String, String>()       // for Passs1
     var hkana2c1 = Dictionary<String, String>()   // for Pass1(byte kana)
+    
+    public enum Modes {
+        case full
+        case keepAbbreviation
+    }
     
     public init() {
         do {
@@ -52,15 +60,31 @@ public struct Japanese
             }
         }
     }
+    
+    // Make fuzzy search string
+    public func getKeyJpKeepver(_ str: String) -> String
+    {
+        var ret = getKeyOne(str, mode: .keepAbbreviation)
+        ret = wordSpecialSynonim(ret)
+        return ret
+    }
+    
+    // make string for fazzy search
+    public func getKeyJp(_ str: String) -> String
+    {
+        var ret = getKeyOne(str, mode: .full)
+        ret = wordSpecialSynonim(ret)
+        return ret
+    }
 
     // Get あかさたな character for index.
-    public func Getあかさたな(_ str: String) -> String {
+    public func getあかさたな(_ str: String) -> String {
         let from = "アイウエオァィゥェォヴカキクケコガギグゲゴサシスセソザジズゼゾタチツテトダヂヅデドッナニヌネノハヒフヘホバビブベボパピプペポマミムメモヤユヨャュョラリルレロワヲンゐゑ0123456789０１２３４５６７８９"
         let to = "あああああああああああかかかかかかかかかかささささささささささたたたたたたたたたたたなななななはははははははははははははははまままままややややややらららららわわわわわ11111111111111111111"
         
         var sb = ""
         for c in str {
-            var s1 = GetKeyOne(c, mode: .keepAbbreviation)
+            var s1 = getKeyOne(c, mode: .keepAbbreviation)
             s1 = s1.uppercased()
             if let i = from.firstIndex(of: Character(s1)) {// org.IndexOf(s1); {
                 let c = to[i...i]
@@ -72,24 +96,7 @@ public struct Japanese
         }
         return sb
     }
-    
-
-    // Make fuzzy search string
-    public func GetKeyJpKeepver(_ str: String) -> String
-    {
-        var ret = GetKeyOne(str, mode: .keepAbbreviation)
-        ret = wordSpecialSynonim(ret)
-        return ret
-    }
-
-    // make string for fazzy search
-    public func GetKeyJp(_ str: String) -> String
-    {
-        var ret = GetKeyOne(str, mode: .full)
-        ret = wordSpecialSynonim(ret)
-        return ret
-    }
-    
+        
     // normalize some synonim character
     private func wordSpecialSynonim(_ str: String) -> String
     {
@@ -111,7 +118,7 @@ public struct Japanese
         return s
     }
     
-    private func GetChar(_ s: String, i: inout Int) -> String
+    private func getChar(_ s: String, i: inout Int) -> String
     {
         // Hankaku-Dakuten
         if i < s.count - 1 {
@@ -136,24 +143,19 @@ public struct Japanese
         }
     }
     
-    public enum Modes {
-        case full
-        case keepAbbreviation
-    }
-
     // Fuzzy single character
-    private func GetKeyOne(_ character: String.Element, mode: Modes) -> String {
-        return GetKeyOne(String(character), mode: mode)
+    private func getKeyOne(_ character: String.Element, mode: Modes) -> String {
+        return getKeyOne(String(character), mode: mode)
     }
     
     // Fuzzy single character
-    private func GetKeyOne(_ str: String, mode: Modes) -> String
+    private func getKeyOne(_ str: String, mode: Modes) -> String
     {
         let normalizedString = str.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         var ret = ""
         var index = 0
         while index < normalizedString.count {
-            let char = GetChar(normalizedString, i: &index)
+            let char = getChar(normalizedString, i: &index)
             ret += char
             index += 1
         }

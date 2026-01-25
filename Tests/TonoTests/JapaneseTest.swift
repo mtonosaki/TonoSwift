@@ -10,21 +10,21 @@ class JapaneseTest: XCTestCase {
 
     func test_Getあかさたな() {
         let jp = Japanese()
-        XCTAssertEqual(jp.Getあかさたな("あかさたなはまやらわ"), "あかさたなはまやらわ")
-        XCTAssertEqual(jp.Getあかさたな("いきしちにひみいりゐ"), "あかさたなはまあらわ")
-        XCTAssertEqual(jp.Getあかさたな("うくすつぬふむゆるう"), "あかさたなはまやらあ")
-        XCTAssertEqual(jp.Getあかさたな("えけせてねへめえれゑ"), "あかさたなはまあらわ")
-        XCTAssertEqual(jp.Getあかさたな("おこそとのほもよろを"), "あかさたなはまやらあ") // NOTE: を-->お-->あ
-        XCTAssertEqual(jp.Getあかさたな("がざだばぱ"), "かさたはは")
-        XCTAssertEqual(jp.Getあかさたな("ぎじぢびぴ"), "かささはは") // NOTE: ぢ-->じ-->さ
-        XCTAssertEqual(jp.Getあかさたな("ぐずづぶぷ"), "かささはは") // NOTE: づ-->ず-->さ
-        XCTAssertEqual(jp.Getあかさたな("げぜでべぺ"), "かさたはは")
-        XCTAssertEqual(jp.Getあかさたな("ごぞどぼぽ"), "かさたはは")
+        XCTAssertEqual(jp.getあかさたな("あかさたなはまやらわ"), "あかさたなはまやらわ")
+        XCTAssertEqual(jp.getあかさたな("いきしちにひみいりゐ"), "あかさたなはまあらわ")
+        XCTAssertEqual(jp.getあかさたな("うくすつぬふむゆるう"), "あかさたなはまやらあ")
+        XCTAssertEqual(jp.getあかさたな("えけせてねへめえれゑ"), "あかさたなはまあらわ")
+        XCTAssertEqual(jp.getあかさたな("おこそとのほもよろを"), "あかさたなはまやらあ") // NOTE: を-->お-->あ
+        XCTAssertEqual(jp.getあかさたな("がざだばぱ"), "かさたはは")
+        XCTAssertEqual(jp.getあかさたな("ぎじぢびぴ"), "かささはは") // NOTE: ぢ-->じ-->さ
+        XCTAssertEqual(jp.getあかさたな("ぐずづぶぷ"), "かささはは") // NOTE: づ-->ず-->さ
+        XCTAssertEqual(jp.getあかさたな("げぜでべぺ"), "かさたはは")
+        XCTAssertEqual(jp.getあかさたな("ごぞどぼぽ"), "かさたはは")
     }
     
     func test_Fuzzy() {
-        XCTAssertEqual(Japanese.def.GetKeyJp("ＴＰＳの二本柱の一つは自働化です。"), "tpsノ2本柱ノ1ツハ自動化デス。")
-        XCTAssertEqual(Japanese.def.GetKeyJp("にゅーん、にょ-ん"), "ヌン、ニヨン")
-        XCTAssertEqual(Japanese.def.GetKeyJp("よくリードタイムを L/Tと略するけど分かりにくいよね"), "ヨクリドタイムオltト略スルケド分カリニクイヨネ")
+        XCTAssertEqual(Japanese.def.getKeyJp("ＴＰＳの二本柱の一つは自働化です。"), "tpsノ2本柱ノ1ツハ自動化デス。")
+        XCTAssertEqual(Japanese.def.getKeyJp("にゅーん、にょ-ん"), "ヌン、ニヨン")
+        XCTAssertEqual(Japanese.def.getKeyJp("よくリードタイムを L/Tと略するけど分かりにくいよね"), "ヨクリドタイムオltト略スルケド分カリニクイヨネ")
     }
 }
