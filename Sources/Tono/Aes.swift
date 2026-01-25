@@ -19,7 +19,7 @@ class Aes {
     
     private let _symmetricKey: SymmetricKey
     
-    @available(macOS 11.0, *)
+    @available(macOS 11.0, iOS 14.0, *)
     init (_ saltString: String = "") {
         let masterKey = SymmetricKey(size: .bits256)
         let saltData = saltString.data(using: .utf8) ?? Data()

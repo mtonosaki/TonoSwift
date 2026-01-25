@@ -23,7 +23,7 @@ public class DigitalEnvelope {
         case decryptionFailed
     }
     
-    @available(macOS 11.0, *)
+    @available(macOS 11.0, iOS 14.0, *)
     public static func seal(plainText: String, recipientPublicKeyBase64: Base64String, salt: String = "") throws -> SealedEnvelopeBase64String {
         let aes = Aes(salt)
         let encryptedBody = try aes.encrypt(plainText: plainText)
