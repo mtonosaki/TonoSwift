@@ -17,10 +17,18 @@ class Aes {
         case decriptFailed
     }
     
-    let _symmetricKey: SymmetricKey
+    private let _symmetricKey: SymmetricKey
     
-    init () {
-        self._symmetricKey = SymmetricKey(size: .bits256)
+    @available(macOS 11.0, *)
+    init (_ saltString: String = "") {
+        let masterKey = SymmetricKey(size: .bits256)
+        let saltData = saltString.data(using: .utf8) ?? Data()
+        self._symmetricKey = HKDF<SHA256>.deriveKey(
+            inputKeyMaterial: masterKey,
+            salt: saltData,
+            info: "AdditionalSecurityLayer".data(using: .utf8)!,
+            outputByteCount: 32
+        )
     }
     
     init(symmetricKey: SymmetricKey) {

@@ -23,8 +23,9 @@ public class DigitalEnvelope {
         case decryptionFailed
     }
     
-    public static func seal(plainText: String, recipientPublicKeyBase64: Base64String) throws -> SealedEnvelopeBase64String {
-        let aes = Aes()
+    @available(macOS 11.0, *)
+    public static func seal(plainText: String, recipientPublicKeyBase64: Base64String, salt: String = "") throws -> SealedEnvelopeBase64String {
+        let aes = Aes(salt)
         let encryptedBody = try aes.encrypt(plainText: plainText)
         let aesKeyBase64 = aes.symmetricKey.toBase64()
         let encryptedAesKey = try RsaLocalKeyChain.encryptWithSpecifiedPublicKey(
