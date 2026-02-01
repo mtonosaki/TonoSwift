@@ -95,7 +95,7 @@ public struct ImageHash {
                 let pos = y * bytesPerRow + x * bytesPerPixel
                 guard pos + 2 < CFDataGetLength(cfData) else { continue }
                 
-                let pixelValue = make16ColorDepth(dataPtr[pos + 0], dataPtr[pos + 1], dataPtr[pos + 2])
+                let pixelValue = makeColorValue(dataPtr[pos + 0], dataPtr[pos + 1], dataPtr[pos + 2])
                 pixelAll.append(pixelValue)
 
                 switch (x, y) {
@@ -112,9 +112,38 @@ public struct ImageHash {
         return computeFinalHash(core: pixelCore, inner: pixelInner, outer: pixelOuter)
     }
     
-    private static func make16ColorDepth(_ r: UInt8, _ g: UInt8, _ b: UInt8) -> UInt8 {
-        let rgbAve = UInt8((UInt(r) + UInt(g) + UInt(b)) / 3)
-        return (rgbAve / 64) << 6 | (r / 64) << 4 | (g / 64) << 2 | (b / 64)
+    private static func makeColorValue(_ r: UInt8, _ g: UInt8, _ b: UInt8) -> UInt8 {
+        let rd = Double(r) / 255.0
+        let gd = Double(g) / 255.0
+        let bd = Double(b) / 255.0
+        
+        let maxC = max(rd, gd, bd)
+        let minC = min(rd, gd, bd)
+        let delta = maxC - minC
+        
+        let brightnessVal = UInt8(sqrt(maxC) * 7.0 + 0.5)
+        
+        let saturationVal = (maxC == 0) ? 0.0 : (delta / maxC)
+        let isGrayscale = saturationVal < 0.15
+        
+        if isGrayscale {
+            return brightnessVal << 1
+        } else {
+            var hue: Double = 0.0
+            if delta > 0 {
+                if maxC == rd {
+                    hue = (gd - bd) / delta + (gd < bd ? 6.0 : 0.0)
+                } else if maxC == gd {
+                    hue = (bd - rd) / delta + 2.0
+                } else {
+                    hue = (rd - gd) / delta + 4.0
+                }
+                hue /= 6.0
+            }
+            let hueVal = UInt8(hue * 15.0 + 0.5) & 0x0F
+            
+            return (hueVal << 4) | (brightnessVal << 1) | 1
+        }
     }
     
     private static func computeFinalHash(core: Data, inner: Data, outer: Data) -> String {
