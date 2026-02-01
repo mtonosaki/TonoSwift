@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UIKit
 import Tono
 
 struct ContentView: View {
@@ -17,13 +16,12 @@ struct ContentView: View {
     var body: some View {
         ScrollView {
             Button {
-                guard let image = UIImage(named: "sampleLogoAlpha") else {
-                    return
-                }
-                hashCode = ImageHash.getImageHash(image: image){ img, dat in
+                let image = Image("sampleLogoAlpha")
+                hashCode = ImageHash.getImageHash(image: image) { img, dat in
                     imageForHash = img
                     dataForHash = dat
                 }
+                print("hash code = \(hashCode)")
             }
             label: {
                 HStack {
