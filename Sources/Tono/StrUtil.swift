@@ -32,7 +32,15 @@ open class StrUtil {
         return false
     }
     
+    public static func makeUrlSafeBase64( str: Base64String ) -> UrlSafeBase64String {
+        return str
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "+", with: "-")
+    }
     
+    public static func makeUrlSafeBase64( data: Data ) -> UrlSafeBase64String {
+        return makeUrlSafeBase64(str: data.base64EncodedString())
+    }
     
     public static func isIntegerString(_ str: String ) -> Bool {
         var index = str.startIndex

@@ -102,4 +102,8 @@ class StrUtilsTest: XCTestCase {
         XCTAssertFalse(StrUtil.isEmpty(" "))
         XCTAssertFalse(StrUtil.isEmpty("hoge"))
     }
+    
+    func test_urlSafeBase64() {
+        XCTAssertEqual(StrUtil.makeUrlSafeBase64(str: "aaa/+"), "aaa_-")
+    }
 }
