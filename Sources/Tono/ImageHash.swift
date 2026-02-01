@@ -38,8 +38,8 @@ public struct ImageHash {
         
         let targetHeight = CGFloat(ceil(targetWidth / originalSize.width * originalSize.height))
         let canvasSize = CGSize(width: targetWidth, height: targetHeight)
-        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
+        
         guard let context = CGContext(
             data: nil,
             width: Int(canvasSize.width),
@@ -60,6 +60,7 @@ public struct ImageHash {
         let cgImageRef = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
 #endif
         guard let cgImage = cgImageRef else { return defaultHash }
+        context.interpolationQuality = .high
         context.draw(cgImage, in: CGRect(origin: .zero, size: canvasSize))
         
         guard let processedCGImage = context.makeImage() else { return defaultHash }
@@ -72,31 +73,83 @@ public struct ImageHash {
         let W = processedCGImage.width
         let H = processedCGImage.height
         let bytesPerRow = processedCGImage.bytesPerRow
-        let bpp = processedCGImage.bitsPerPixel / 8
+        let bytesPerPixel = processedCGImage.bitsPerPixel / 8
         
-        var hashBase = Data()
+        let marginW = W / 8
+        let marginH = H / 8
+        let coreRangeW = (marginW * 2)..<(W - marginW * 2)
+        let coreRangeH = (marginH * 2)..<(H - marginH * 2)
+        let leftEdge = 0..<marginW
+        let rightEdge = (W-marginW)..<W
+        let topEdge = 0..<marginH
+        let bottomEdge = (H-marginH)..<H
+
+        var pixelCore = Data()
+        var pixelInner = Data()
+        var pixelOuter = Data()
+        var pixelAll = Data()
+        pixelAll.reserveCapacity(W * H)
+        
         for y in 0..<H {
             for x in 0..<W {
-                let pos = y * bytesPerRow + x * bpp
-                if pos + 2 < CFDataGetLength(cfData) {
-                    hashBase.append(make16ColorDepth(dataPtr[pos + 0], dataPtr[pos + 1], dataPtr[pos + 2]))
+                let pos = y * bytesPerRow + x * bytesPerPixel
+                guard pos + 2 < CFDataGetLength(cfData) else { continue }
+                
+                let pixelValue = makeColorValue(dataPtr[pos + 0], dataPtr[pos + 1], dataPtr[pos + 2])
+                pixelAll.append(pixelValue)
+
+                switch (x, y) {
+                case (coreRangeW, coreRangeH):
+                    pixelCore.append(pixelValue)
+                case (leftEdge, _), (rightEdge, _), (_, topEdge), (_, bottomEdge):
+                    pixelOuter.append(pixelValue)
+                default:
+                    pixelInner.append(pixelValue)
                 }
             }
         }
-        callback?(Image(processedCGImage, scale: scale, label: Text("image for hash calculation")), hashBase)
-        return computeFinalHash(from: hashBase)
+        callback?(Image(processedCGImage, scale: scale, label: Text("image for hash calculation")), pixelAll)
+        return computeFinalHash(core: pixelCore, inner: pixelInner, outer: pixelOuter)
     }
     
-    private static func make16ColorDepth(_ r: UInt8, _ g: UInt8, _ b: UInt8) -> UInt8 {
-        let rgbAve = UInt8((UInt(r) + UInt(g) + UInt(b)) / 3)
-        return (rgbAve / 64) << 6 | (r / 64) << 4 | (g / 64) << 2 | (b / 64)
+    private static func makeColorValue(_ r: UInt8, _ g: UInt8, _ b: UInt8) -> UInt8 {
+        let rd = Double(r) / 255.0
+        let gd = Double(g) / 255.0
+        let bd = Double(b) / 255.0
+        
+        let maxC = max(rd, gd, bd)
+        let minC = min(rd, gd, bd)
+        let delta = maxC - minC
+        
+        let brightnessVal = UInt8(sqrt(maxC) * 7.0 + 0.5)
+        
+        let saturationVal = (maxC == 0) ? 0.0 : (delta / maxC)
+        let isGrayscale = saturationVal < 0.15
+        
+        if isGrayscale {
+            return brightnessVal << 1
+        } else {
+            var hue: Double = 0.0
+            if delta > 0 {
+                if maxC == rd {
+                    hue = (gd - bd) / delta + (gd < bd ? 6.0 : 0.0)
+                } else if maxC == gd {
+                    hue = (bd - rd) / delta + 2.0
+                } else {
+                    hue = (rd - gd) / delta + 4.0
+                }
+                hue /= 6.0
+            }
+            let hueVal = UInt8(hue * 15.0 + 0.5) & 0x0F
+            
+            return (hueVal << 4) | (brightnessVal << 1) | 1
+        }
     }
     
-    private static func computeFinalHash(from data: Data) -> String {
-        let oneThird = data.count / 3
-        let hash1 = SHA512.hash(data: data.subdata(in: 0..<oneThird)).prefix(61)
-        let hash2 = SHA512.hash(data: data.subdata(in: oneThird..<(oneThird * 2)))
-        let hash3 = SHA512.hash(data: data.subdata(in: (oneThird * 2)..<data.count)).prefix(61)
+    private static func computeFinalHash(core: Data, inner: Data, outer: Data) -> String {
+        let hash1 = SHA512.hash(data: core)
+        let hash2 = SHA512.hash(data: inner).prefix(62)
+        let hash3 = SHA512.hash(data: outer).prefix(60)
         
         var combinedData = Data()
         combinedData.append(contentsOf: hash1)
