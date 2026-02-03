@@ -23,7 +23,11 @@ struct ContentView: View {
                         imageForHash = img
                         dataForHash = dat
                     }
-                    print("hash code = \(hashCode)")
+#if os(iOS)
+                    print("iOS   - hash code = \(hashCode)")
+#else
+                    print("macOS - hash code = \(hashCode)")
+#endif
                 }
             } label: {
                 HStack {
@@ -51,11 +55,22 @@ struct ContentView: View {
                 Text("count = \(hashCode.utf8.count)")
                 
                 if let dataForHash = dataForHash {
-                    let data = Array(dataForHash)
-                    let str = data.map { String(format: "%02X", $0) }.joined()
-                    ForEach(0..<min(32, (str.count / 64) + 1), id: \.self) { index in
-                        Text("\(StrUtil.mid(str, start: index * 64, length: 64))")
-                            .font(Font.custom("Menlo", size: 10))
+                    VStack() {
+                        let data = Array(dataForHash)
+                        let str = data.map { String(format: "%02X", $0) }.joined()
+                        ForEach(0..<min(32, (str.count / 64) + 1), id: \.self) { index in
+                            Text("\(StrUtil.mid(str, start: index * 64, length: 64))")
+                                .font(Font.custom("Menlo", size: 10))
+                        }
+                        Button {
+#if os(macOS)
+                            print("macOS - data = \(str)")
+#else
+                            print("iOS   - data = \(str)")
+#endif
+                        } label: {
+                            Text("Copy data")
+                        }
                     }
                 }
             }

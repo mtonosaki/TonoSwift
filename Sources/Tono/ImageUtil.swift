@@ -49,4 +49,49 @@ public struct ImageUtil {
         return (Image(nsImage: finalNSImage), data)
 #endif
     }
+    
+    
+    public static func calculatePixelOccupancy(size: UInt, subdivisions: UInt = 3) -> [[Double]] {
+        if size == 0 {
+            return []
+        }
+        if size == 1 {
+            return [[1.0]]
+        }
+        let squareSize = Double(size)
+        let canvasSizeFloat = ceil(squareSize * sqrt(2.0))
+        let canvasSize = Int(canvasSizeFloat)
+        let subDouble = Double(subdivisions)
+        let halfCanvas = Double(canvasSize) / 2.0
+        let radius = (squareSize * sqrt(2.0)) / 2.0
+        let startOffset = -halfCanvas + 0.5
+
+        var result = Array(repeating: Array(repeating: 0.0, count: canvasSize), count: canvasSize)
+        
+        for row in 0..<canvasSize {
+            for col in 0..<canvasSize {
+                let px = startOffset + Double(col)
+                let py = startOffset + Double(row)
+                
+                var insideCount = 0.0
+                let subStep = 1.0 / subDouble
+                let subStart = -0.5 + (subStep / 2.0)
+                
+                for si in 0..<Int(subdivisions) {
+                    for sj in 0..<Int(subdivisions) {
+                        let sx = px + subStart + Double(sj) * subStep
+                        let sy = py + subStart + Double(si) * subStep
+                        
+                        // 判定 (x^2 + y^2 <= R^2)
+                        if (sx * sx + sy * sy) <= (radius * radius) {
+                            insideCount += 1.0
+                        }
+                    }
+                }
+                result[row][col] = insideCount / (subDouble * subDouble)
+            }
+        }
+        
+        return result
+    }
 }
