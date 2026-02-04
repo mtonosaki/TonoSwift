@@ -8,6 +8,14 @@ import XCTest
 
 class ImageUtilTest: XCTestCase {
     
+    func test_calculatePixelOccupancy_for_print() {
+        let ret = ImageUtil.calculatePixelOccupancy(size: 5, subdivisions: 100)
+        for y in 0..<(ret[0].count) {
+            let line = ret[y].map { String($0) }.joined(separator: ",")
+            print(line)
+        }
+    }
+
     func test_calculatePixelOccupancy3_3() {
         let ret = ImageUtil.calculatePixelOccupancy(size: 3, subdivisions: 3)
         XCTAssertEqual(ret[0].map { Int($0 * 100) }, [ 0,  33,  66,  33,  0])
@@ -26,15 +34,6 @@ class ImageUtilTest: XCTestCase {
         XCTAssertEqual(ret[4].map { Int($0 * 100) }, [ 0,  34,  60,  34,  0])
     }
     
-    func test_calculatePixelOccupancy5_100() {
-        let ret = ImageUtil.calculatePixelOccupancy(size: 4, subdivisions: 100)
-        for y in 0..<(ret[0].count) {
-            let line = ret[y].map { String($0) }.joined(separator: "|")
-            print(line)
-        }
-    }
-    
-
     func test_calculatePixelOccupancy2_100() {
         let ret = ImageUtil.calculatePixelOccupancy(size: 2, subdivisions: 100)
         XCTAssertEqual(ret[0].map { Int($0 * 100) }, [ 43,  88,  43])
