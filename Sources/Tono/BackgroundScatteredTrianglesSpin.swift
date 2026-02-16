@@ -12,7 +12,11 @@ public struct BackgroundScatteredTrianglesSpin: View {
     @State private var startDate = Date()
     @State private var triangles: [TriangleItem] = []
     @State private var canvasSize: CGSize = .zero
-    
+
+    public init() {
+        
+    }
+
     public var body: some View {
         GeometryReader { _ in
             TimelineView(.animation) { timelineContext in
