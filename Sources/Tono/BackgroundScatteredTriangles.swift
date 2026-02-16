@@ -9,6 +9,10 @@ import SwiftUI
 
 @available(macOS 12.0, iOS 15.0, *)
 public struct BackgroundScatteredTriangles: View {
+    public init() {
+        
+    }
+
     public var body: some View {
         Canvas { context, size in
             drawTriangles(context: context, size: size)
